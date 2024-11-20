@@ -277,7 +277,7 @@ namespace Ogre
         mForwardPlusSystem = 0;
         mForwardPlusImpl = 0;
 
-        OGRE_DELETE mSky;
+        destroyRectangle2D( mSky );
         mSky = 0;
 
         OGRE_DELETE mRadialDensityMask;
@@ -1080,8 +1080,7 @@ namespace Ogre
         {
             if( !mSky )
             {
-                mSky = OGRE_NEW Rectangle2D( Id::generateNewId<MovableObject>(),
-                                             &mEntityMemoryManager[SCENE_STATIC], this );
+                mSky = createRectangle2D( SCENE_STATIC );
                 // We can't use BT_DYNAMIC_* because the scene may be rendered from multiple cameras
                 // in the same frame, and dynamic supports only one set of values per frame
                 mSky->initialize( BT_DEFAULT,
@@ -1147,7 +1146,7 @@ namespace Ogre
         {
             if( mSky )
                 mSky->detachFromParent();
-            OGRE_DELETE mSky;
+            destroyRectangle2D( mSky );
             mSky = 0;
             if( mSkyMaterial )
             {
