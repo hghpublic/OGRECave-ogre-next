@@ -77,10 +77,14 @@ namespace Ogre
     {
         mHlmsBuffer = vaoManager->createConstBuffer( sizeof( AtmoSettingsGpu ), BT_DEFAULT, 0, false );
         createMaterial();
+
+        RenderSystem::addSharedListener( this );
     }
     //-------------------------------------------------------------------------
     AtmosphereNpr::~AtmosphereNpr()
     {
+        RenderSystem::removeSharedListener( this );
+
         std::map<Ogre::SceneManager *, Rectangle2D *>::const_iterator itor = mSkies.begin();
         std::map<Ogre::SceneManager *, Rectangle2D *>::const_iterator endt = mSkies.end();
 
@@ -107,6 +111,20 @@ namespace Ogre
 
         mVaoManager->destroyConstBuffer( mHlmsBuffer );
         mHlmsBuffer = 0;
+    }
+    //-------------------------------------------------------------------------
+    void AtmosphereNpr::eventOccurred( const String &eventName, const NameValuePairList *parameters )
+    {
+        if( eventName == "DeviceLost" )
+        {
+            mVaoManager->destroyConstBuffer( mHlmsBuffer );
+            mHlmsBuffer = 0;
+        }
+        else if( eventName == "DeviceRestored" )
+        {
+            mHlmsBuffer =
+                mVaoManager->createConstBuffer( sizeof( AtmoSettingsGpu ), BT_DEFAULT, 0, false );
+        }
     }
     //-------------------------------------------------------------------------
     void AtmosphereNpr::createMaterial()
